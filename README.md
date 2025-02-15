@@ -6,6 +6,7 @@
 <h2>This will be the structure of Application</h2>
 <pre>
 Parser/
+├── setup.py                    # Python package setup file
 ├── secrets.py                  # Stores sensitive credentials (database URL, API keys, secret keys)
 ├── config.py                   # Configuration file (settings for Flask, database, logging)
 ├── run.py                      # Entry point for the Flask application
@@ -20,6 +21,12 @@ Parser/
 │   │   ├── __init__.py         
 │   │   ├── routes.py           # Defines routes related to log parsing and processing
 │   │   └── models.py           # Database models for storing parsed logs, user interactions
+│   ├── test/                
+│   │   ├── __init__.py         
+│   │   └── test_functions.py   # Testing the functions  
+│   ├── function/                
+│   │   ├── __init__.py         
+│   │   └── functions.py        # Reusable function for APIs
 │   ├── templates/              
 │   │   ├── Auth.html           # Login/Register page template
 │   │   ├── Home.html           # Home page template
