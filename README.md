@@ -1,6 +1,9 @@
 # minor_project : Cloud based automated Nginx logs parser
 
-This will be the structure of Application
+<html>
+<head></head>
+<body><P>
+<h1>This will be the structure of Application</h1>
 Parser/
 ├── secrets.py                  # Stores sensitive credentials (e.g., database URL, API keys, secret keys)
 ├── config.py                   # Configuration file (e.g., settings for Flask, database, logging, and environment variables)
@@ -25,3 +28,6 @@ Parser/
 │       ├── logic.py            # These will contain the Log for our application
 │       └── log_storage/        # Stores processed log data (Consider using SQLite/Redis)
 └── docker-compose.yml          # Docker Compose configuration for running the app with dependencies (DB, Redis, etc.)
+</p>
+</body>
+</html>
