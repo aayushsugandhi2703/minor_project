@@ -1,4 +1,4 @@
-# minor_project : Cloud based automated Nginx logs parser
+# Cloud based automated Nginx logs parser
 
 <html>
 <head></head>
