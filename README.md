@@ -3,7 +3,7 @@
 <html>
 <head></head>
 <body>
-<h1>This will be the structure of Application</h1>
+<h2>This will be the structure of Application</h2>
 <pre>
 Parser/
 ├── secrets.py                  # Stores sensitive credentials (e.g., database URL, API keys, secret keys)
