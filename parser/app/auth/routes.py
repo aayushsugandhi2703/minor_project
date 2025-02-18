@@ -1,82 +1,56 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, session, current_app
-from app.models import User, Session
-from app.forms import LoginForm, RegisterForm
+from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app
+from flask_login import login_user, logout_user, login_required
+from app.forms import RegisterForm, LoginForm
+from app.models import User, session_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from flask_login import login_user, logout_user, login_required
-from sqlalchemy.orm import scoped_session
 
-# Blueprint for authentication
-auth_bp = Blueprint('auth', __name__)  
+auth_bp = Blueprint('auth', __name__)
 
-# Rate limiter setup
-limiter = Limiter(key_func=get_remote_address, default_limits=["5 per minute"])
+# initializing the limiter with default limits
+limiter = Limiter(key_func=get_remote_address, default_limits=["10 per minute"])
 
-# Scoped session to ensure thread safety
-db_session = scoped_session(Session)
-
-# User Login Route
-@auth_bp.route('/login', methods=['GET', 'POST'])
+#this route is for registering a new user
 @limiter.limit("5 per minute")
-def Login():
-    form = LoginForm()
-
-    if form.validate_on_submit():
-        try:
-            user = db_session.query(User).filter_by(username=form.username.data).first()
-            if user and check_password_hash(user.password, form.password.data):
-                current_app.logger.info(f"[LOGIN SUCCESS] User '{form.username.data}' logged in.")
-
-                session['user_id'] = user.id  # Store user session
-                login_user(user)  # Flask-Login session management
-                
-                return redirect(url_for('service_bp.fetch_save'))
-            else:
-                current_app.logger.warning(f"[LOGIN FAILED] Invalid login attempt for '{form.username.data}'.")
-        except Exception as e:
-            current_app.logger.error(f"[LOGIN ERROR] Unexpected error for '{form.username.data}': {e}")
-        finally:
-            db_session.remove()  # Ensure session is properly closed
-
-    return render_template('Login.html', form=form)
-
-
-# User Registration Route
 @auth_bp.route('/register', methods=['GET', 'POST'])
-@limiter.limit("5 per minute")
-def Register():
+def signup():
     form = RegisterForm()
-
     if form.validate_on_submit():
-        try:
-            hashed_password = generate_password_hash(form.password.data)  
-            user = User(username=form.username.data, password=hashed_password)
+        user = User.query.filter_by(email=form.email.data ).first()
+        if user:
+            return redirect(url_for('auth.signup'))
+        else:
+            new_user = User( name = form.name.data, 
+                            email = form.email.data, 
+                            password = generate_password_hash(form.password.data, method='sha256') )
+            current_app.logger.info(f'New user {new_user.email} created at {new_user.created_at}')
+            session_db.add(new_user)
+            session_db.commit()
+            return redirect(url_for('auth.signin'))
+    return render_template('register.html', form=form)
 
-            db_session.add(user)
-            db_session.commit()
-            current_app.logger.info(f"[REGISTER SUCCESS] User '{form.username.data}' registered successfully.")
-            
-            return redirect(url_for('auth.Login'))
-        except Exception as e:
-            db_session.rollback()
-            current_app.logger.error(f"[REGISTER ERROR] Failed to register '{form.username.data}': {e}")
-        finally:
-            db_session.remove()  
+# This route is for logging in the user
+@limiter.limit("5 per minute")
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def signin():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.password, form.password.data):
+            login_user(user)
+            current_app.logger.info(f'User {form.email.data} logged in at ')
+            return redirect(url_for('service.home'))
+        else:
+            current_app.logger.info(f'Failed login attempt for {form.email.data}')
+            return redirect(url_for('auth.signin'))
+    return render_template('login.html', form=form)
 
-    return render_template('Register.html', form=form)
-
-
-# User Logout Route
-@auth_bp.route('/logout', methods=['GET'])  
+# This route is for logging out the user
 @login_required
-def Logout():
-    try:        
-        logout_user()
-        session.clear()
-
-        current_app.logger.info("[LOGOUT] User logged out successfully.")
-        return redirect(url_for('auth.Login'))
-    except Exception as e:
-        current_app.logger.error(f"[LOGOUT ERROR] Failed to logout: {e}")
-        return redirect(url_for('auth.Login'))
+@auth_bp.route('/logout')
+def signout():
+    logout_user()
+    session.clear()
+    current_app.logger.info(f'User logged out')
+    return redirect(url_for('auth.signin'))

@@ -1,34 +1,28 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from flask_login import UserMixin
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, create_engine
+from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
-from flask_login import UserMixin   
 
-engine = create_engine('sqlite:///parser.db', echo=True)
+engine = create_engine('sqlite:///database.db', echo=True)
+
 Base = declarative_base()
 
-# Define the User database model
-class User(Base, UserMixin):  
-    __tablename__ = 'users'
+class User(UserMixin, Base):
+    
+    __tablename__ = 'users_data'
     id = Column(Integer, primary_key=True)
-    username = Column(String(50), unique=True, nullable=False)
+    name = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True, nullable=False)
     password = Column(String(100), nullable=False)
+    created_at = Column(DateTime, nullable=False)
 
-@property
-def is_active(self):
-    return True
+    def __repr__(self):
+        return f'<User {self.name}>'
+    
+Session = sessionmaker( bind = engine )
 
-@property
-def is_anonymous(self):
-    return False
-
-@property
-def is_authenticated(self):
-    return True
-
-# Create database engine and session
-
-SessionLocal = sessionmaker(bind=engine)
-Session = SessionLocal()
+session_db = Session()
 
 Base.metadata.create_all(engine)
+
