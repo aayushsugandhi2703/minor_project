@@ -37,5 +37,7 @@ def create_app():
 
 #Setting up Blueprints
     from app.auth.routes import auth_bp
-   # from app.service.routes import service_bp
+    from app.service.routes import service_bp
+    app.register_blueprint(auth_bp, url_prefix='/register')
+    app.register_blueprint(service_bp, url_prefix='/upload')
     return app
