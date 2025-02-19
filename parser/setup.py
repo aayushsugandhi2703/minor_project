@@ -1,15 +1,16 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='reuse',
-    version='0.0.1',
-    packages=find_packages(where ='functions'),
-    install_requires=[],
+    name='parser-functions',  
+    version='0.1.0',
+    packages=find_packages(where='app'),  # Looks for packages inside "app/"
+    package_dir={'': 'app'},  # Maps the root package directory to "app/"
+    install_requires=[],  # Add dependencies if needed
     author='Aayush Sugandhi',
     author_email='aayush.sugandhi@gmail.com',
-    description='it has two functions to fetch and parse logs',
+    description='Reusable functions for log parsing and processing',
     long_description_content_type="text/markdown",
-    keywords='just functions to reduce the use of some code',
-    url='https://github.com/aayushsugandhi2703/minor_project',
+    keywords='log parsing, authentication, flask',
+    url='https://github.com/aayushsugandhi2703/minor-project',
     python_requires='>=3.6',
 )
