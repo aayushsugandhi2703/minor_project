@@ -5,11 +5,16 @@ from app.models import User, session_db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from prometheus_client import Counter
 
 auth_bp = Blueprint('auth', __name__)
 
 # initializing the limiter with default limits
 limiter = Limiter(key_func=get_remote_address, default_limits=["10 per minute"])
+
+@auth_bp.route('/', methods=['GET', 'POST'])
+def redirects():
+    return redirect(url_for('auth.signin'))
 
 #this route is for registering a new user
 @limiter.limit("5 per minute")
@@ -28,7 +33,7 @@ def signup():
             session_db.add(new_user)
             session_db.commit()
             return redirect(url_for('auth.signin'))
-    return render_template('register.html', form=form)
+    return render_template('signup.html', form=form)
 
 # This route is for logging in the user
 @limiter.limit("5 per minute")

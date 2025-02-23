@@ -20,5 +20,32 @@ def fetch(link):
     try:
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump(response.json(), file, indent=4)
+        print(f"Logs Uploaded")
     except OSError as e:
         print(f"Error writing to file: {e}")
+
+def parse_logs():
+#Parses the log data from the local file
+    log_file = 'log_files/logs.txt'
+
+    if not os.path.exists(log_file):
+        print("Error: Log file does not exist.")
+        return []  # Exit function early
+
+    try:
+        with open(log_file, 'r', encoding='utf-8') as file:
+            logs = json.load(file)  # Load logs from JSON file
+    except json.JSONDecodeError as e:
+        print(f"Error reading JSON file: {e}")
+        return []
+
+    log_list = []
+    
+    # Compiled regex for efficiency
+    pattern = re.compile(r'(?P<ip>\d+\.\d+\.\d+\.\d+) - - \[(?P<timestamp>.*?)\] "(?P<method>\w+) (?P<url>.*?) (?P<protocol>HTTP/\d\.\d)" (?P<status>\d+) (?P<size>\d+) "(?P<referrer>.*?)" "(?P<user_agent>.*?)"')
+
+    for log in logs:
+        for match in pattern.finditer(log):  # Using finditer() for multiple matches
+            log_list.append(match.groupdict())  # Extract dictionary of matched fields
+
+    return log_list

@@ -5,9 +5,14 @@ import logging
 from logging.handlers import RotatingFileHandler
 from flask_login import LoginManager
 import os
+from app.models import User, Session
 
 def create_app():
     app = Flask(__name__)
+
+    # setting the config file
+    from config import Config
+    app.config.from_object(Config)
 
 # Setting the logger
     def setup_logger(logger):
@@ -21,23 +26,28 @@ def create_app():
 
         app.logger.setLevel(logging.INFO)
         app.logger.info('App startup')
+    
+    setup_logger(app.logger)
+
 
 # setting the limiter
     limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])
     limiter.init_app(app)
 
 #setting up login manager
-    login_manager = LoginManager()
+
+    login_manager = LoginManager()  
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
 
-# setting the config file
-    from config import Config
-    app.config.from_object(Config)
+    @login_manager.user_loader
+    def load_user(user_id):
+        return Session.query(User).get(int(user_id))
 
 #Setting up Blueprints
     from app.auth.routes import auth_bp
     from app.service.routes import service_bp
-    app.register_blueprint(auth_bp, url_prefix='/register')
+    app.register_blueprint(auth_bp, url_prefix='/')
     app.register_blueprint(service_bp, url_prefix='/upload')
+    
     return app
