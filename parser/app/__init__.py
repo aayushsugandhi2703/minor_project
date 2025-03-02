@@ -15,6 +15,7 @@ def create_app():
 # configurations
     from config import Config 
     app.config.from_object(Config)
+    app.config["UPLOAD_FOLDER"] = "app/uploads"
 
 # initialize the json web token
     jwt.init_app(app)
@@ -49,6 +50,8 @@ def create_app():
 
 #import the blueprints
     from app.api.routes import api_bp
+    from app.service.routes import service_bp
     app.register_blueprint(api_bp, url_prefix='/')
+    app.register_blueprint(service_bp, url_prefix='/service')
     
     return app

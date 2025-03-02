@@ -28,13 +28,14 @@ def Login():
             current_app.logger.info(f"User {form.username.data} logged in successfully")
 
             session['user_id'] = user.id
+            session['username'] = user.username
             login_user(user)
             
 
             access_token = create_access_token(identity=user.id)
             refresh_token = create_refresh_token(identity=user.id)
 
-            response = make_response(redirect(url_for('api.')))  
+            response = make_response(redirect(url_for('service.Upload_Parse')))  
             response.set_cookie('access_token_cookie', access_token, httponly=True)
             response.set_cookie('refresh_token_cookie', refresh_token, httponly=True)
 
@@ -69,7 +70,7 @@ def Register():
 @login_required
 def Logout():
 
-    response = make_response(redirect(url_for('auth.')))
+    response = make_response(redirect(url_for('api.Login')))
     response.delete_cookie('access_token_cookie')  
     response.delete_cookie('refresh_token_cookie') 
     logout_user()
