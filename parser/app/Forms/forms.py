@@ -30,7 +30,5 @@ class upload_form(FlaskForm):
         "Sort Logs By",
         choices=[("ip", "IP Address"), ("status", "Status Code"), ("timestamp", "Timestamp")],
     )
-    
-
     submit = SubmitField('Upload')
 

@@ -43,7 +43,7 @@ def Login():
         else:
             current_app.logger.info(f"User {form.username.data} login unsuccessfully or not a user")
 
-    return render_template('Login.html', form=form)
+    return render_template('auth.html', form=form)
 
 
 # This function and route is for the user to register
@@ -63,7 +63,7 @@ def Register():
     else:
         Session.rollback()
         current_app.logger.info(f"User {form.username.data} signup unsuccessfully")
-    return render_template('Register.html', form=form)
+    return render_template('auth.html', form=form)
 
 # This function and route is for the user to logout
 @api_bp.route('/logout', methods=['GET'])  

@@ -20,7 +20,7 @@ body {
 }
 
 .header {
-    background: linear-gradient(45deg, #4a00e0, #8e2de2);
+    background: linear-gradient(45deg, #8e2de2,#4a00e0);
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -69,7 +69,7 @@ body {
 }
 
 .sidebar {
-    background: linear-gradient(45deg, #4a00e0, #8e2de2);
+    background: linear-gradient(180deg, #8e2de2, #4a00e0);
     width: 250px;
     overflow: hidden;
     display: flex;

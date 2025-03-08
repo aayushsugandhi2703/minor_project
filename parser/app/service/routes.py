@@ -1,10 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash,current_app, session
+from flask import Blueprint, render_template, redirect, url_for,current_app, session
 from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import login_required
 from app.Forms.forms import upload_form
-import re, requests , json, os, ipaddress
+import re , json, os, ipaddress
 
 service_bp = Blueprint('service', __name__)
 
