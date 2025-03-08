@@ -41,7 +41,7 @@ def Login():
 
             return response 
         else:
-            current_app.logger.info(f"User {form.username.data} login unsuccessfully")
+            current_app.logger.info(f"User {form.username.data} login unsuccessfully or not a user")
 
     return render_template('Login.html', form=form)
 

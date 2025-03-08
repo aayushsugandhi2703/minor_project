@@ -1,0 +1,223 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, #a0b0ff, #d0d0ff, #a0b0ff);
+    animation: bgShift 15s ease infinite;
+}
+
+@keyframes bgShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    height: 600px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-section {
+    flex: 1;
+    background: linear-gradient(135deg, #a0b0ff, #d0d0ff);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: rgb(12, 1, 88);
+    padding: 20px;
+    position: relative;
+}
+
+.welcome-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yIi8+PGNpcmNsZSBjeD0iMTUwIiBjeT0iMTUwIiByPSI0MCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iMC4yIi8+PC9zdmc+') no-repeat center;
+    background-size: 200px;
+    z-index: 1;
+}
+
+.welcome-section h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    z-index: 2;
+}
+
+.welcome-section p {
+    font-size: 1.1em;
+    opacity: 0.9;
+    z-index: 2;
+}
+
+.form-section {
+    flex: 1;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    border-radius: 0 20px 20px 0;
+}
+
+.form-section h2 {
+    font-size: 1.5em;
+    color: #4a00e0;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.field {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.field input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 8px;
+    font-size: 1em;
+    color: #333;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.field input:focus {
+    border-color: #4a00e0;
+    box-shadow: 0 0 8px rgba(74, 0, 224, 0.3);
+    outline: none;
+}
+
+.field label {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    font-size: 0.9em;
+    color: #4a00e0;
+    background: transparent;
+    padding: 0 4px;
+    transition: all 0.2s ease;
+    pointer-events: none;
+}
+
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label {
+    top: -8px;
+    font-size: 0.8em;
+    background: white;
+}
+
+.error {
+    color: #ff3b30;
+    font-size: 0.85em;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.button1 {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(45deg, #4a00e0, #8e2de2);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.button1::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.button1:hover {
+    background: linear-gradient(45deg, #3a00b8, #7d1ac7);
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(74, 0, 224, 0.3);
+}
+
+.button1:hover::after {
+    opacity: 1;
+}
+
+.button1 input[type="submit"] {
+    background: none;
+    border: none;
+    color: inherit;
+    font: inherit;
+    width: 100%;
+    cursor: pointer;
+    padding: 0;
+}
+
+.button2 {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.button2 a {
+    color: #4a00e0;
+    text-decoration: none;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.button2 a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+        height: auto;
+        max-width: 100%;
+        margin: 20px;
+    }
+
+    .welcome-section, .form-section {
+        flex: none;
+        width: 100%;
+        height: 300px;
+    }
+
+    .welcome-section {
+        border-radius: 20px 20px 0 0;
+    }
+
+    .form-section {
+        border-radius: 0 0 20px 20px;
+    }
+}

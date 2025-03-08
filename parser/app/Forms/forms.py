@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectMultipleField
+from wtforms import StringField, PasswordField, SubmitField, SelectMultipleField, RadioField
 from wtforms.validators import DataRequired, Length
 from flask_wtf.file import FileField, FileRequired
 
@@ -25,7 +25,12 @@ class upload_form(FlaskForm):
             ("url", "URL"),
             ('user_agent', 'User Agent'),
         ],
+    )    
+    sortby = RadioField(
+        "Sort Logs By",
+        choices=[("ip", "IP Address"), ("status", "Status Code"), ("timestamp", "Timestamp")],
     )
+    
 
     submit = SubmitField('Upload')
 

@@ -4,7 +4,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_login import login_required
 from app.Forms.forms import upload_form
-import re, requests , json, os
+import re, requests , json, os, ipaddress
 
 service_bp = Blueprint('service', __name__)
 
@@ -41,11 +41,17 @@ def Upload_Parse():
 
         if json_file_path:
             current_app.logger.info(f"Log file {filename} parsed successfully by user {session['username']}")
-            return redirect(url_for("service.sorting_op"))
+
+            filter =form.sortby.data
+            current_app.logger.info(f"sort used {filter} by user {session['username']}")
+            sorted_data = sorting(json_file_path, filter )
+            if sorted_data:
+                current_app.logger.info(f"Log file {filename} sorted successfully by user {session['username']}")
+                return redirect(url_for("api.Login"))
         else:
             return redirect(url_for("service.Upload_Parse"))
 
-    return render_template('Home.html', form=form)
+    return render_template('Homee.html', form=form)
 
 def parse_log_file(file_path, selected_fields):
     log_list = []
@@ -68,28 +74,39 @@ def parse_log_file(file_path, selected_fields):
                 filtered_data = {field: log_data[field] for field in selected_fields}
                 log_list.append(filtered_data)
 
-        json_data = json.dumps(log_list, indent=4)  # Convert to JSON
-
         # Create a separate directory for storing JSON files
         json_dir = os.path.join("app", "json_logs")
         if not os.path.exists(json_dir):
             os.makedirs(json_dir)
 
-        json_file_name = os.path.basename(file_path).replace(".log", ".json")
-        json_file_path = os.path.join(json_dir, json_file_name)  # Save JSON in separate directory
-        
+        json_file_path = os.path.join(json_dir, "log.json")  # Save JSON in separate directory
         with open(json_file_path, "w", encoding="utf-8") as json_file:
-            json_file.write(json_data)
-
+            json.dump(log_list, json_file, indent=4)
+            
         return json_file_path  # Return JSON data as a string
-
+       
     except Exception as e:
         current_app.logger.error(f"Error parsing log file: {e}")
-        return []
+        return None
+ 
+def sorting(json_file_path, filter):
+    try:
+        with open(json_file_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+        
+        if filter == "ip":
+            # Convert IP address strings to actual IP objects for proper sorting
+            sorted_data = sorted(data, key=lambda x: ipaddress.ip_address(x.get(filter, '0.0.0.0')))
+        else:
+            # Sort normally for other fields
+            sorted_data = sorted(data, key=lambda x: x.get(filter, ''))
 
-'''    
-@login_required
-@limiter.limit("5 per minute")
-@service_bp.route('/output', methods=['GET', 'POST'])
-def sorting_op():
-'''
+        # Save sorted data back to the same file
+        with open(json_file_path, "w", encoding="utf-8") as file:
+            json.dump(sorted_data, file, indent=4)
+
+        return json_file_path  # Return the updated file path
+
+    except Exception as e:
+        current_app.logger.error(f"Error sorting log file: {e}")
+        return None  # Return None if sorting fails

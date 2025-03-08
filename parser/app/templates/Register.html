@@ -1,171 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            height: 100%;
-        }
-
-        body {
-            width: 100%;
-            height: 100%;
-            --s: 105px;
-            /* Control the size */
-            --c1: #b9b9b9;
-            --c2: #dcdcdc;
-            --c3: #fafafa;
-
-            background: conic-gradient(from 75deg,
-                    var(--c1) 15deg,
-                    var(--c2) 0 30deg,
-                    #0000 0 180deg,
-                    var(--c2) 0 195deg,
-                    var(--c1) 0 210deg,
-                    #0000 0) calc(0.5 * var(--s)) calc(0.5 * var(--s) / 0.577),
-                conic-gradient(var(--c1) 30deg,
-                    var(--c3) 0 75deg,
-                    var(--c1) 0 90deg,
-                    var(--c2) 0 105deg,
-                    var(--c3) 0 150deg,
-                    var(--c2) 0 180deg,
-                    var(--c3) 0 210deg,
-                    var(--c1) 0 256deg,
-                    var(--c2) 0 270deg,
-                    var(--c1) 0 286deg,
-                    var(--c2) 0 331deg,
-                    var(--c3) 0);
-            background-size: var(--s) calc(var(--s) / 0.577);
-            /* 0.577=tan(30deg) */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding-left: 2em;
-            padding-right: 2em;
-            padding-bottom: 0.4em;
-            background-color: rgba(23, 23, 23, 0.8);
-            /* Slightly transparent */
-            border-radius: 25px;
-            transition: .4s ease-in-out;
-        }
-
-        .form:hover {
-            transform: scale(1.05);
-            border: 1px solid black;
-        }
-
-        #heading {
-            text-align: center;
-            margin: 2em;
-            color: rgb(255, 255, 255);
-            font-size: 1.2em;
-        }
-
-        .field {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5em;
-            border-radius: 25px;
-            padding: 0.6em;
-            border: none;
-            outline: none;
-            color: white;
-            background-color: #171717;
-            box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
-        }
-
-        .input-icon {
-            height: 1.3em;
-            width: 1.3em;
-            fill: white;
-        }
-
-        .input-field {
-            background: none;
-            border: none;
-            outline: none;
-            width: 100%;
-            color: #d3d3d3;
-        }
-
-        .form .btn {
-            display: flex;
-            justify-content: center;
-            flex-direction: row;
-            margin-top: 2.5em;
-            margin-bottom: 3em;
-        }
-
-        .button1,
-        .button2 {
-            padding: 0.5em;
-            border-radius: 5px;
-            border: none;
-            background-color: #252525;
-            color: white;
-            text-align: center;
-            display: block;
-            width: 100%;
-        }
-
-        .button1:hover,
-        .button2:hover {
-            background-color: black;
-        }
-    </style>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='auth.css') }}">
 </head>
-
 <body>
-    <form class="form" action="register" method="POST">
-        {{form.hidden_tag()}}
-        <div class="field">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                viewBox="0 0 16 16">
-                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-            </svg>
-            {{ form.username.label }}
-            {{ form.username }}
-            {% for error in form.username.errors %}
-            {{ error }}
-            {% endfor %}
+    <div class="login-container">
+        <div class="welcome-section">
+            <h1>Welcome</h1>
+            <p>Sign Up your account</p>
         </div>
-        <div class="field">
-            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                viewBox="0 0 16 16">
-                <path
-                    d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z">
-                </path>
-            </svg>
-            {{ form.password.label }}
-            {{ form.password }}
-            {% for error in form.password.errors %}
-            {{ error }}
-            {% endfor %}
-        </div>
-        <div class="button1"> 
-            {{ form.submit }}
-        </div>
-        <div class="button2">
-            <a href="{{ url_for('api.Login') }}" class="button2">Sign In</a>
-        </div>
-    </form>
-</body>
+        <div class="form-section">
+            <h2>Hello!</h2>
+            <form action="{{ url_for('api.Register') }}" method="POST">
+                {{ form.hidden_tag() }}
 
+                <div class="field">
+                    <input type="text" name="username"  required>
+                    <label>Username</label>
+                    {% for error in form.username.errors %}
+                        <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="field">
+                    <input type="password" name="password"  required>
+                    <label>Password</label>
+                    {% for error in form.password.errors %}
+                        <div class="error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="button1">
+                    <input type="submit" value="Register">
+                </div>
+
+                <div class="button2">
+                    <a href="{{ url_for('api.Login') }}">Go To Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
 </html>
