@@ -11,6 +11,10 @@ Base = declarative_base()
 class User(UserMixin,Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    email = Column(String, nullable=False)
+    organization = Column(String, nullable=False)
+    phone = Column(Integer, nullable = False)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
 

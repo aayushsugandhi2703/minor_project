@@ -1,0 +1,212 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #4914bc, #882fcc);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .profile-container {
+    width: 75%;
+    max-width: 1100px;
+    background-color: #ffffff20; /* light glass */
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+    animation: fadeIn 1s ease-in-out;
+  }
+  
+  .profile-card {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .profile-left {
+    background: linear-gradient(135deg, #4914bc, #6822e6);
+    color: #fff;
+    padding: 40px 20px;
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .profile-left:hover {
+    background: linear-gradient(135deg, #6822e6, #4914bc);
+  }
+  
+  .profile-img-container {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #fff;
+    margin-bottom: 20px;
+  }
+  
+  .profile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  h2, h3, h4 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+  }
+  .role {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: #f0f0f0;
+    margin-bottom: 30px;
+  }
+  
+  .profile-link {
+    position: absolute;
+    bottom: 30px;
+    font-size: 20px;
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 12px;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+  }
+  
+  .profile-link:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .profile-right {
+    width: 65%;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .profile-section {
+    margin-bottom: 30px;
+  }
+  
+  .profile-section h3 {
+    font-size: 22px;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  
+  .info-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+  
+  .info-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    width: calc(50% - 10px);
+    color: #fff;
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+  }
+  
+  .info-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.15);
+  }
+  
+  .info-card h4 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .info-card p {
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    color: #e0e0e0;
+  }
+  
+  .social-icons {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 18px;
+    color: #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  
+  .fb {
+    background-color: #3b5998;
+  }
+  
+  .tw {
+    background-color: #00acee;
+  }
+  
+  .ig {
+    background-color: #e4405f;
+  }
+  
+  .social-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    .profile-card {
+      flex-direction: column;
+    }
+  
+    .profile-left, .profile-right {
+      width: 100%;
+      text-align: center;
+    }
+  
+    .profile-right {
+      padding: 30px 20px;
+    }
+  
+    .info-card {
+      width: 100%;
+    }
+  
+    .social-icons {
+      justify-content: center;
+    }
+  }
+ 

@@ -6,3 +6,11 @@ services:
     restart: on-failure
     ports:
       - 5000:5000
+    volumes:
+      - D:/Projects/demo/project/Docker_data:/app
+      - D:/Projects/demo/project/Docker_data:/app/logs
+      - D:/Projects/demo/project/Docker_data:/app/json_logs
+    environment:
+      - SQLALCHEMY_DATABASE_URI= 'sqlite:///databse.db'
+volumes :
+  database:

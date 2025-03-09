@@ -71,7 +71,7 @@ def parse_log_file(file_path, selected_fields):
                 log_data = match.groupdict()  # Convert log entry to dictionary
                 
                 # Filter log data based on user selection
-                filtered_data = {field: log_data[field] for field in selected_fields}
+                filtered_data = {field: log_data[field] for field in selected_fields if field in log_data}
                 log_list.append(filtered_data)
 
         # Create a separate directory for storing JSON files
@@ -93,6 +93,10 @@ def sorting(json_file_path, filter):
     try:
         with open(json_file_path, "r", encoding="utf-8") as file:
             data = json.load(file)
+
+        if not data:
+            current_app.logger.warning("Sorting failed: No data in JSON file.")
+            return None
         
         if filter == "ip":
             # Convert IP address strings to actual IP objects for proper sorting
@@ -110,3 +114,4 @@ def sorting(json_file_path, filter):
     except Exception as e:
         current_app.logger.error(f"Error sorting log file: {e}")
         return None  # Return None if sorting fails
+    

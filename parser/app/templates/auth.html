@@ -15,18 +15,18 @@
             <div class="signin-signup">
                 <form action="{{ url_for('api.Login') }}" method="POST" class="sign-in-form">
                     <h2 class="title">Sign in</h2>
-                    {{ form.hidden_tag() }}
+                    {{ login_form.hidden_tag() }}
                     <div class="input-field">
                         <i class="fas fa-user"></i>
                         <input type="text" name="username" placeholder="Username" required>
-                        {% for error in form.username.errors %}
+                        {% for error in login_form.username.errors %}
                         <div class="error">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
                         <input type="password" name="password" placeholder="Password" required>
-                        {% for error in form.password.errors %}
+                        {% for error in login_form.password.errors %}
                         <div class="error">{{ error }}</div>
                         {% endfor %}
                     </div>
@@ -36,22 +36,53 @@
                 <form action="{{ url_for('api.Register') }}" method="POST" class="sign-up-form">
                     <h2 class="title">Sign up</h2>
                     {{ form.hidden_tag() }}
+                
                     <div class="input-field">
                         <i class="fas fa-user"></i>
-                        <input type="text" name="username" placeholder="Username" required>
+                        {{ form.name(placeholder="Your Name") }}
+                        {% for error in form.name.errors %}
+                        <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-envelope"></i>
+                        {{ form.email(placeholder="Email") }}
+                        {% for error in form.email.errors %}
+                        <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-building"></i>
+                        {{ form.organization(placeholder="Organization") }}
+                        {% for error in form.organization.errors %}
+                        <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-phone"></i>
+                        {{ form.phone(placeholder="Phone") }}
+                        {% for error in form.phone.errors %}
+                        <div class="error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        {{ form.username(placeholder="Username") }}
                         {% for error in form.username.errors %}
                         <div class="error">{{ error }}</div>
                         {% endfor %}
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input type="password" name="password" placeholder="Password" required>
+                        {{ form.password(placeholder="Password") }}
                         {% for error in form.password.errors %}
                         <div class="error">{{ error }}</div>
                         {% endfor %}
                     </div>
+                
                     <input type="submit" class="btn" value="Register" />
                 </form>
+                
             </div>
         </div>
 

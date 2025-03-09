@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ user.name }}'s Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}" />
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="profile-container">
+        <div class="profile-card">
+
+            <!-- Left Section -->
+            <div class="profile-left">
+                <div class="profile-img-container">
+                    <!-- Optionally make this dynamic if you add avatars to user -->
+                    <img src="https://cdn-icons-png.flaticon.com/512/147/147144.png" alt="Profile Picture"
+                        class="profile-img" />
+                </div>
+
+                <!-- Dynamic user name -->
+                <h2>{{ user.name }}</h2>
+
+                <!-- You can make the role dynamic if you have that data -->
+                <p class="role">{{ user.organization }}</p>
+
+                <!-- Link to file upload/parse page -->
+                <a href="{{ url_for('service.Upload_Parse') }}" class="profile-link" title="Upload & Parse Logs">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+
+            <!-- Right Section -->
+            <div class="profile-right">
+
+                <div class="profile-section">
+                    <h3>Profile</h3>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <h4>Name</h4>
+                            <p>{{ user.name }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Email</h4>
+                            <p>{{ user.email }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Organization</h4>
+                            <p>{{ user.organization }}</p>
+                        </div>
+                        <div class="info-card">
+                            <h4>Phone</h4>
+                            <p>{{ user.phone }}</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Optional Social Icons -->
+                <div class="social-icons">
+                    <a href="#" class="social-btn fb"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn tw"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-btn ig"><i class="fab fa-instagram"></i></a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
