@@ -5,51 +5,61 @@ from flask_limiter.util import get_remote_address
 from flask_login import login_required
 from app.Forms.forms import upload_form
 import re , json, os, ipaddress
+from email.message import EmailMessage
+import smtplib, ssl
+from prometheus_client import Histogram
 
 service_bp = Blueprint('service', __name__)
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])
 
+# Histogram to track the latency of the login request
+Request_latency_upload = Histogram('upload_latency', 'Histogram tracking upload latency', buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10])
+Request_latency_output = Histogram('output_latency', 'Histogram tracking output latency', buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10])
+
+
 @service_bp.route('/upload', methods=['GET', 'POST'])
 @login_required
 @limiter.limit("5 per minute")
 def Upload_Parse():
-    form = upload_form()
-    
-    if form.validate_on_submit():
-        file = form.file.data
-        filename = secure_filename(file.filename)
-        upload_folder = current_app.config.get("UPLOAD_FOLDER", "app/uploads")
+    with Request_latency_upload.time():
 
-        if not os.path.exists(upload_folder):
-            os.makedirs(upload_folder)
+        form = upload_form()
+        
+        if form.validate_on_submit():
+            file = form.file.data
+            filename = secure_filename(file.filename)
+            upload_folder = current_app.config.get("UPLOAD_FOLDER", "app/uploads")
 
-        file_path = os.path.join(upload_folder, filename)
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
 
-        with open(file_path, "wb") as f:
-            f.write(file.read())
+            file_path = os.path.join(upload_folder, filename)
 
-        session["uploaded_file"] = file_path  # Save file path in session
+            with open(file_path, "wb") as f:
+                f.write(file.read())
 
-        # Get the selected fields from the form
-        selected_fields = form.fields.data  # List of selected field names
+            session["uploaded_file"] = file_path  # Save file path in session
 
-        current_app.logger.info(f"File {filename} uploaded successfully by user {session['username']}")
+            # Get the selected fields from the form
+            selected_fields = form.fields.data  # List of selected field names
 
-        # Parse log file and filter fields
-        json_file_path = parse_log_file(file_path, selected_fields)
+            current_app.logger.info(f"File {filename} uploaded successfully by user {session['username']}")
 
-        if json_file_path:
-            current_app.logger.info(f"Log file {filename} parsed successfully by user {session['username']}")
+            # Parse log file and filter fields
+            json_file_path = parse_log_file(file_path, selected_fields)
 
-            filter =form.sortby.data
-            current_app.logger.info(f"sort used {filter} by user {session['username']}")
-            sorted_data = sorting(json_file_path, filter )
-            if sorted_data:
-                current_app.logger.info(f"Log file {filename} sorted successfully by user {session['username']}")
-                return redirect(url_for("api.Login"))
-        else:
-            return redirect(url_for("service.Upload_Parse"))
+            if json_file_path:
+                current_app.logger.info(f"Log file {filename} parsed successfully by user {session['username']}")
+
+                filter =form.sortby.data
+                current_app.logger.info(f"sort used {filter} by user {session['username']}")
+                sorted_data = sorting(json_file_path, filter )
+                if sorted_data:
+                    current_app.logger.info(f"Log file {filename} sorted successfully by user {session['username']}")
+                    return redirect(url_for("service.Output"))
+            else:
+                return redirect(url_for("service.Upload_Parse"))
 
     return render_template('Homee.html', form=form)
 
@@ -114,4 +124,53 @@ def sorting(json_file_path, filter):
     except Exception as e:
         current_app.logger.error(f"Error sorting log file: {e}")
         return None  # Return None if sorting fails
-    
+
+@service_bp.route('/output', methods=['GET', 'POST'])
+@login_required
+def Output():
+    with Request_latency_upload.time():
+
+        json_dir = os.path.join("app", "json_logs")
+        json_file_path = os.path.join(json_dir, "log.json")
+
+        if not os.path.exists(json_file_path):
+            return "No data available"
+
+        # Send email with log file
+
+        sender_email = "aayush.sugandhi@gmail.com"
+        receiver_email = session['email']
+        password = "glev ussz pjnk lbpq"
+        """password = os.getenv('APP_PASSWORD_GMAIL')"""
+        subject = "Log File"
+        body = """
+        This is an automated email from the server.
+        Please find the attached log file.
+        """
+        em = EmailMessage()
+        em['from'] = sender_email
+        em['to'] = receiver_email
+        em['subject'] = subject
+        em.set_content(body)
+
+        with open(json_file_path, 'rb') as f:
+            file_data = f.read()
+            file_name = os.path.basename(json_file_path)
+            em.add_attachment(file_data, maintype='application', subtype='json', filename=file_name)
+
+        # for securing the email
+        context = ssl.create_default_context()
+
+        # sending the email
+        try:
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
+                server.login(sender_email, password)
+                server.send_message(em)
+
+            current_app.logger.info(f"Log file sent to {receiver_email} by Owner")
+            return f"Log file sent to {receiver_email}", 200
+
+        except Exception as e:
+            current_app.logger.error(f"Failed to send log file: {str(e)}")
+            return "Failed to send email", 500
+        

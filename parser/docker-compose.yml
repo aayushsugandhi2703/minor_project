@@ -1,3 +1,4 @@
+
 services:
   parser:
     image: parser_image
@@ -5,12 +6,23 @@ services:
     build: .
     restart: on-failure
     ports:
-      - 5000:5000
+      - "5000:5000"
     volumes:
-      - D:/Projects/demo/project/Docker_data:/app
-      - D:/Projects/demo/project/Docker_data:/app/logs
-      - D:/Projects/demo/project/Docker_data:/app/json_logs
+      - D:/Projects/demo/project/Docker_data/database.db:/app/data
+      - D:/Projects/demo/project/Docker_data/logs:/app/logs
+      - D:/Projects/demo/project/Docker_data/json_logs:/app/json_logs
+      - D:/Projects/demo/project/Docker_data/prometheus_data:/app/prometheus_data
     environment:
-      - SQLALCHEMY_DATABASE_URI= 'sqlite:///databse.db'
-volumes :
-  database:
+      - SQLALCHEMY_DATABASE_URI=sqlite:///data/database.db
+      - PROMETHEUS_MULTIPROC_DIR=/app/prometheus_data
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus_container
+    ports:
+      - "9090:9090"
+    volumes:
+      - D:/Projects/demo/project/Docker_data/prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - parser
