@@ -7,6 +7,7 @@ from logging.handlers import RotatingFileHandler
 from flask_login import LoginManager
 from app.Models.models import User, Session
 import os
+from prometheus_client import Counter
 
 jwt = JWTManager()
 def create_app():
@@ -19,6 +20,22 @@ def create_app():
 
 # initialize the json web token
     jwt.init_app(app)
+
+# initialize the Prometheus Directory
+    prometheus_dir = app.config.get('PROMETHEUS_MULTIPROC_DIR', './prometheus_data')
+
+    # If the directory doesn't exist, create it
+    if not os.path.exists(prometheus_dir):
+        os.makedirs(prometheus_dir)
+
+    # Simple: remove all files inside the directory
+    for file in os.listdir(prometheus_dir):
+        file_path = os.path.join(prometheus_dir, file)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
+    # Set the environment variable
+    os.environ['PROMETHEUS_MULTIPROC_DIR'] = prometheus_dir
 
 #initializing the login manager
     login_manager = LoginManager()
@@ -51,7 +68,11 @@ def create_app():
 #import the blueprints
     from app.api.routes import api_bp
     from app.service.routes import service_bp
+    from app.matrix.routes import matrix_bp
+
     app.register_blueprint(api_bp, url_prefix='/')
     app.register_blueprint(service_bp, url_prefix='/service')
+    app.register_blueprint(matrix_bp, url_prefix='/matrix')
+
     
     return app
