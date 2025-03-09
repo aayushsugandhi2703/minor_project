@@ -140,7 +140,6 @@ def Output():
 
         sender_email = "aayush.sugandhi@gmail.com"
         receiver_email = session['email']
-        password = "glev ussz pjnk lbpq"
         """password = os.getenv('APP_PASSWORD_GMAIL')"""
         subject = "Log File"
         body = """
