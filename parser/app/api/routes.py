@@ -61,7 +61,10 @@ def Register():
 
         login_form = LoginForm()
         form = RegisterForm()
-
+        if form.validate_on_submit():
+            if Session.query(User).filter_by(username=form.username.data).first():
+                flash('Username already exists')
+                return redirect(url_for('api.Register'))
         # If the form is submitted and validated, the user will be redirected to the login page
         if form.validate_on_submit():
             passcode = generate_password_hash(form.password.data)   

@@ -10,9 +10,11 @@
     <div class="header">
         <img src="your-logo.png" alt="Logo" class="logo"> <!-- Replace with your logo path -->
         <div class="greeting">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-            </svg>
+            <a href="{{ url_for('api.Profile') }}" class="profile-link">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+            </a>
             <span>Hi, {{ current_user.username }}</span>
         </div>
     </div>
@@ -24,15 +26,29 @@
                 <span></span>
                 <span></span>
             </div>
-            <a href="{{ url_for('api.Profile') }}" class="sidebar-item">
+            <div class="sidebar-top">
+                <a href="{{ url_for('api.Profile') }}" class="sidebar-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                    <span>Profile</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="sidebar-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                    </svg>
+                    <span>Reports</span>
+                </a>
+            </div>
+            <a href="{{ url_for('api.Login') }}" class="sidebar-item sidebar-logout">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
-                <span>Profile</span>
-            </a>
-            <a href="{{url_for('api.Login')}}" class="sidebar-item">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M16.5 3a4.5 4.5 0 0 0-4.5 4.5c0 1.12.41 2.14 1.08 2.93L11 12.5l-2-2 2.07-2.07A4.47 4.47 0 0 0 7.5 3 4.5 4.5 0 0 0 3 7.5c0 2.49 2.01 4.5 4.5 4.5.83 0 1.6-.22 2.28-.61L12 13.59l2.22-2.22c.68.39 1.45.61 2.28.61 2.49 0 4.5-2.01 4.5-4.5S19 3 16.5 3zm-5 15v2H5v-2h6.5zm8 0v2H13v-2h6.5z"/>
+                    <path d="M10 17l5-5-5-5v3H3v4h7v3zm11-1V8c0-1.1-.9-2-2-2H5v2h14v8h-2v2h2c1.1 0 2-.9 2-2z"/>
                 </svg>
                 <span>Logout</span>
             </a>
@@ -83,7 +99,6 @@
                             {{ label }}
                         </label>
                     {% endfor %}
-        
                 </div>
 
                 <button type="submit">{{ form.submit.label }}</button>
@@ -95,12 +110,17 @@
         function toggleSidebar() {
             const sidebar = document.querySelector('.sidebar');
             const mainContainer = document.querySelector('.main-container');
+            const menuToggle = document.querySelector('.menu-toggle');
             sidebar.classList.toggle('shrink');
             mainContainer.classList.toggle('shrink');
             mainContainer.classList.toggle('expand');
+            if (sidebar.classList.contains('shrink')) {
+                menuToggle.style.left = '15px';
+            } else {
+                menuToggle.style.left = 'calc(50% - 15px)';
+            }
         }
 
-        // Trigger file input click and update file name
         document.getElementById('file-input').addEventListener('change', function() {
             const fileName = this.files.length > 0 ? this.files[0].name : 'Not selected file';
             document.getElementById('file-name').textContent = fileName;

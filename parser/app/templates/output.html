@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log Output</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(45deg, #a0b0ff, #d0d0ff, #a0b0ff);
+            animation: bgShift 15s ease infinite;
+        }
+
+        @keyframes bgShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Header styling */
+        .header {
+            background: linear-gradient(45deg, #8e2de2, #4a00e0);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        /* Logout button styling */
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            color: white;
+        }
+
+        .logout-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+            margin-left: 8px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 100px auto 40px auto; /* Adjusted for header height */
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4a00e0, #8e2de2);
+            z-index: -1;
+            border-radius: 17px;
+        }
+
+        .log-table {
+            margin-top: 20px;
+        }
+
+        .log-email {
+            margin-top: 10px;
+            font-size: 1.1rem;
+            color: #4a00e0;
+            background: rgba(74, 0, 224, 0.05);
+            border: 1px solid #4a00e0;
+        }
+
+        .selected-fields {
+            margin-top: 10px;
+            font-style: italic;
+            color: #4a00e0;
+        }
+
+        .text-center {
+            color: #4a00e0;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4a00e0, #8e2de2);
+            border: none;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.4);
+            background: linear-gradient(45deg, #8e2de2, #4a00e0);
+        }
+
+        .btn-secondary {
+            background: rgba(74, 0, 224, 0.1);
+            color: #4a00e0;
+            border: 1px solid #4a00e0;
+            padding: 10px 20px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(74, 0, 224, 0.2);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <span>Log File Output</span>
+        <a href="#" class="logout-btn">
+            Log Out
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/>
+            </svg>
+        </a>
+    </div>
+
+    <div class="container">
+        <!-- User email info -->
+        <div class="alert alert-info log-email">
+            <strong>Email:</strong> {{ email }}
+        </div>
+
+        <!-- Selected fields info -->
+        {% if fields %}
+            <div class="alert alert-secondary selected-fields">
+                <strong>Selected Fields:</strong> {{ fields | join(', ') }}
+            </div>
+        {% else %}
+            <div class="alert alert-warning selected-fields">
+                No specific fields selected.
+            </div>
+        {% endif %}
+
+        <!-- Log table -->
+        <div class="table-responsive log-table">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        {% if logs and logs[0] %}
+                            {% for key in logs[0].keys() %}
+                                <th>{{ key }}</th>
+                            {% endfor %}
+                        {% else %}
+                            <th>No Logs Available</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                        <tr>
+                            {% for value in log.values() %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Back button -->
+        <div class="d-flex justify-content-center mt-4">
+            <a href="{{ url_for('service.Output') }}" class="btn btn-primary">Refresh</a>
+            <a href="{{ url_for('service.Upload_Parse') }}" class="btn btn-secondary ms-2">Back to Home</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

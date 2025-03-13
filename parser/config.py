@@ -6,7 +6,7 @@ class Config:
     SECRET_KEY = get_secret_key()
 
 #for database
-    SQLALCHEMY_DATABASE_URI= 'sqlite:///data/database.db'
+    SQLALCHEMY_DATABASE_URI= 'sqlite:///database.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
 

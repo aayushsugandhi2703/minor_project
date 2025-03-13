@@ -1,3 +1,4 @@
+/* RESET & BASE */
 * {
     margin: 0;
     padding: 0;
@@ -10,6 +11,7 @@ body {
     display: flex;
     flex-direction: column;
     background: linear-gradient(45deg, #a0b0ff, #d0d0ff, #a0b0ff);
+    background-size: 300% 300%;
     animation: bgShift 15s ease infinite;
 }
 
@@ -19,9 +21,10 @@ body {
     100% { background-position: 0% 50%; }
 }
 
+/* HEADER */
 .header {
-    background: linear-gradient(45deg, #8e2de2,#4a00e0);
-    padding: 15px 30px;
+    background: linear-gradient(45deg, #8e2de2, #4a00e0);
+    padding: 0 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -31,6 +34,7 @@ body {
     left: 0;
     right: 0;
     z-index: 100;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .logo {
@@ -50,14 +54,21 @@ body {
     height: 30px;
     fill: white;
     margin-right: 15px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
 
+.greeting svg:hover {
+    transform: scale(1.2) rotate(10deg);
+}
+
+/* MAIN CONTAINER */
 .main-container {
     display: flex;
     flex: 1;
     overflow: hidden;
     margin-top: 80px;
-    transition: margin-left 0.3s ease;
+    transition: margin-left 0.4s ease;
 }
 
 .main-container.shrink {
@@ -68,27 +79,34 @@ body {
     margin-left: 250px;
 }
 
+/* SIDEBAR */
 .sidebar {
     background: linear-gradient(180deg, #8e2de2, #4a00e0);
     width: 250px;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     padding: 100px 0 30px 30px;
-    justify-content: flex-start;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
-    transition: width 0.3s ease;
+    transition: width 0.4s ease, padding 0.4s ease;
     z-index: 99;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar.shrink {
     width: 60px;
-    padding: 100px 0 30px 15px;
+    padding: 100px 0 30px 10px;
 }
 
+.sidebar-top {
+    display: flex;
+    flex-direction: column;
+}
+
+/* TOGGLE */
 .menu-toggle {
     display: flex;
     flex-direction: column;
@@ -99,6 +117,7 @@ body {
     position: absolute;
     top: 90px;
     left: 15px;
+    transition: left 0.4s ease;
 }
 
 .menu-toggle span {
@@ -109,6 +128,11 @@ body {
     transition: all 0.3s ease;
 }
 
+.menu-toggle:hover span {
+    background-color: #ffeb3b;
+}
+
+/* SIDEBAR ITEMS */
 .sidebar-item {
     display: flex;
     align-items: center;
@@ -116,7 +140,7 @@ body {
     padding: 20px 15px;
     color: white;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     white-space: nowrap;
     font-size: 1.2rem;
     margin-top: 20px;
@@ -124,6 +148,7 @@ body {
 
 .sidebar-item:hover {
     background: rgba(255, 255, 255, 0.2);
+    transform: translateX(10px);
 }
 
 .sidebar-item svg {
@@ -131,7 +156,6 @@ body {
     height: 30px;
     fill: white;
     margin-right: 20px;
-    flex-shrink: 0;
 }
 
 .sidebar.shrink .sidebar-item span {
@@ -143,18 +167,35 @@ body {
     padding: 20px 0;
 }
 
+/* SIDEBAR LOGOUT */
+.sidebar-logout {
+    margin-bottom: 20px;
+}
+
+/* CONTAINER */
 .container {
     width: 70%;
+    max-width: 900px;
     min-height: 600px;
     background: white;
     padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     margin: 40px auto;
     position: relative;
     overflow: hidden;
-    border: 2px solid transparent;
-    background-clip: padding-box;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeInUp 1s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 .container::before {
@@ -164,34 +205,35 @@ body {
     left: -2px;
     right: -2px;
     bottom: -2px;
-    background: linear-gradient(45deg, #4a00e0, #8e2de2);
     z-index: -1;
-    border-radius: 17px;
+    border-radius: 22px;
 }
 
+/* FORMS */
 form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 30px;
+    gap: 20px;
 }
 
-h3 {
+h3, h4 {
     color: #4a00e0;
-    font-size: 2rem;
     font-weight: 600;
-    margin-bottom: 20px;
     text-align: center;
 }
 
-h4 {
-    color: #4a00e0;
-    font-size: 1.2rem;
-    font-weight: 500;
-    margin-bottom: 15px;
+h3 {
+    font-size: 2rem;
+    margin-bottom: 20px;
 }
 
-/* File Upload Component Styles */
+h4 {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+
+/* UPLOAD */
 .upload-container {
     height: 250px;
     width: 100%;
@@ -205,7 +247,12 @@ h4 {
     padding: 15px;
     gap: 10px;
     background-color: rgba(74, 0, 224, 0.05);
-    cursor: pointer; /* Make entire container clickable */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.upload-container:hover {
+    transform: scale(1.05);
 }
 
 .upload-header {
@@ -260,25 +307,23 @@ h4 {
     background-color: rgba(255, 255, 255, 0.3);
     border-radius: 50%;
     padding: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .upload-footer p {
     flex: 1;
     text-align: center;
     font-size: 1rem;
-    margin: 0 10px;
 }
 
 #file-input {
     display: none;
 }
 
+/* FIELDS */
 .fields {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-    margin: 20px 0;
     width: 80%;
     background: #f9f9f9;
     padding: 20px;
@@ -307,6 +352,7 @@ h4 {
     cursor: pointer;
 }
 
+/* BUTTON */
 button {
     padding: 12px 30px;
     background: linear-gradient(45deg, #4a00e0, #8e2de2);
@@ -339,4 +385,25 @@ button:hover {
 
 button:hover::after {
     left: 0;
+}
+
+/* MEDIA QUERIES */
+@media (max-width: 768px) {
+    .main-container.expand {
+        margin-left: 60px;
+    }
+
+    .sidebar {
+        width: 60px;
+        padding-left: 10px;
+    }
+
+    .container {
+        width: 90%;
+        margin: 20px auto;
+    }
+
+    .fields {
+        grid-template-columns: 1fr;
+    }
 }

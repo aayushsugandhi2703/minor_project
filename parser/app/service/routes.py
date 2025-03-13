@@ -6,7 +6,7 @@ from flask_login import login_required
 from app.Forms.forms import upload_form
 import re , json, os, ipaddress
 from email.message import EmailMessage
-import smtplib, ssl
+import smtplib, ssl, threading
 from prometheus_client import Histogram
 
 service_bp = Blueprint('service', __name__)
@@ -43,6 +43,7 @@ def Upload_Parse():
 
             # Get the selected fields from the form
             selected_fields = form.fields.data  # List of selected field names
+            session['selected_fields'] = selected_fields
 
             current_app.logger.info(f"File {filename} uploaded successfully by user {session['username']}")
 
@@ -124,7 +125,7 @@ def sorting(json_file_path, filter):
     except Exception as e:
         current_app.logger.error(f"Error sorting log file: {e}")
         return None  # Return None if sorting fails
-
+    
 @service_bp.route('/output', methods=['GET', 'POST'])
 @login_required
 def Output():
@@ -135,41 +136,65 @@ def Output():
 
         if not os.path.exists(json_file_path):
             return "No data available"
+        
+        with open(json_file_path, "r", encoding="utf-8") as file:
+            data = json.load(file)
+        
+        selected_entry = data[:15]
+        selected_fields = session.get('selected_fields', [])
 
-        # Send email with log file
+        receiver_email = session['email']  # Grabbing email from session
+        app = current_app._get_current_object()
 
-        sender_email = "aayush.sugandhi@gmail.com"
-        receiver_email = session['email']
-        """password = os.getenv('APP_PASSWORD_GMAIL')"""
-        subject = "Log File"
-        body = """
-        This is an automated email from the server.
-        Please find the attached log file.
-        """
-        em = EmailMessage()
-        em['from'] = sender_email
-        em['to'] = receiver_email
-        em['subject'] = subject
-        em.set_content(body)
+        # Passing email and file path to the thread
+        argss = (receiver_email, json_file_path)
+        email_thread = threading.Thread(
+            target=send_email,
+            args=(app,receiver_email, json_file_path)
+        )
+        email_thread.start()
 
-        with open(json_file_path, 'rb') as f:
-            file_data = f.read()
-            file_name = os.path.basename(json_file_path)
-            em.add_attachment(file_data, maintype='application', subtype='json', filename=file_name)
+        return render_template(
+            'output.html',
+            logs=selected_entry,  # Show the first 15 entries
+            email=receiver_email,  # Show the email address to user
+            fields=selected_fields  # Show the selected fields to user
+        )
 
-        # for securing the email
-        context = ssl.create_default_context()
-
-        # sending the email
+def send_email(app, receiver_email, json_file_path):
+    with app.app_context():  # Now app context is valid!
         try:
+            sender_email = "aayush.sugandhi@gmail.com"
+            password = os.getenv('APP_PASSWORD_GMAIL')
+
+            subject = "Log File"
+            body = """
+                This is an automated email from the server.
+                Please find the attached log file.
+                """
+
+            em = EmailMessage()
+            em['from'] = sender_email
+            em['to'] = receiver_email
+            em['subject'] = subject
+            em.set_content(body)
+
+            #  Attach the JSON log file
+            with open(json_file_path, 'rb') as f:
+                file_data = f.read()
+                file_name = os.path.basename(json_file_path)
+                em.add_attachment(file_data, maintype='application', subtype='json', filename=file_name)
+
+            context = ssl.create_default_context()
+
             with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
                 server.login(sender_email, password)
                 server.send_message(em)
 
             current_app.logger.info(f"Log file sent to {receiver_email} by Owner")
-            return f"Log file sent to {receiver_email}", 200
+
+        except FileNotFoundError:
+            current_app.logger.error(f"File {json_file_path} not found")
 
         except Exception as e:
             current_app.logger.error(f"Failed to send log file: {str(e)}")
-            return "Failed to send email", 500
-        

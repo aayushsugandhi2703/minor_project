@@ -13,7 +13,7 @@
     <div class="container">
         <div class="forms-container">
             <div class="signin-signup">
-                <form action="{{ url_for('api.Login') }}" method="POST" class="sign-in-form">
+                <form action="{{ url_for('api.Login') }}" method="POST" class="sign-in-form" onsubmit="return validateLoginForm()">
                     <h2 class="title">Sign in</h2>
                     {{ login_form.hidden_tag() }}
                     <div class="input-field">
@@ -25,15 +25,12 @@
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        <input type="password" name="password" placeholder="Password" required>
-                        {% for error in login_form.password.errors %}
-                        <div class="error">{{ error }}</div>
-                        {% endfor %}
+                        <input type="password" name="password" id="login-password" placeholder="Password" required>
                     </div>
                     <input type="submit" value="Login" class="btn solid" />
-
                 </form>
-                <form action="{{ url_for('api.Register') }}" method="POST" class="sign-up-form">
+                
+                <form action="{{ url_for('api.Register') }}" method="POST" class="sign-up-form" onsubmit="return validateSignupForm()">
                     <h2 class="title">Sign up</h2>
                     {{ form.hidden_tag() }}
                 
@@ -74,15 +71,11 @@
                     </div>
                     <div class="input-field">
                         <i class="fas fa-lock"></i>
-                        {{ form.password(placeholder="Password") }}
-                        {% for error in form.password.errors %}
-                        <div class="error">{{ error }}</div>
-                        {% endfor %}
+                        {{ form.password(placeholder="Password", id="signup-password") }}
                     </div>
                 
                     <input type="submit" class="btn" value="Register" />
                 </form>
-                
             </div>
         </div>
 
@@ -112,9 +105,19 @@
                 <img src="{{ url_for('static', filename='img/register.svg') }}" class="image" alt="" />
             </div>
         </div>
+
+        <!-- Custom Alert Modal -->
+        <div class="custom-alert" id="custom-alert">
+            <div class="alert-content">
+                <span class="alert-icon">!</span>
+                <p id="alert-message"></p>
+                <button class="alert-btn" onclick="hideAlert()">OK</button>
+            </div>
+        </div>
     </div>
 
-    <script>const sign_in_btn = document.querySelector("#sign-in-btn");
+    <script>
+        const sign_in_btn = document.querySelector("#sign-in-btn");
         const sign_up_btn = document.querySelector("#sign-up-btn");
         const container = document.querySelector(".container");
 
@@ -125,6 +128,33 @@
         sign_in_btn.addEventListener("click", () => {
             container.classList.remove("sign-up-mode");
         });
+
+        function showAlert(message) {
+            document.getElementById('alert-message').textContent = message;
+            document.getElementById('custom-alert').style.display = 'flex';
+        }
+
+        function hideAlert() {
+            document.getElementById('custom-alert').style.display = 'none';
+        }
+
+        function validateLoginForm() {
+            const password = document.getElementById('login-password').value;
+            if (password.length < 8) {
+                showAlert('Password must be at least 8 characters long!');
+                return false;
+            }
+            return true;
+        }
+
+        function validateSignupForm() {
+            const password = document.getElementById('signup-password').value;
+            if (password.length < 8) {
+                showAlert('Password must be at least 8 characters long!');
+                return false;
+            }
+            return true;
+        }
     </script>
 </body>
 
