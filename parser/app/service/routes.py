@@ -165,7 +165,7 @@ def send_email(app, receiver_email, json_file_path):
     with app.app_context():  # Now app context is valid!
         try:
             sender_email = "aayush.sugandhi@gmail.com"
-            password = os.getenv('APP_PASSWORD_GMAIL')
+            # password = os.getenv('APP_PASSWORD_GMAIL')
 
             subject = "Log File"
             body = """

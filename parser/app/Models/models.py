@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 from flask_login import UserMixin
 
-Engine = create_engine('''sqlite:///database.db''')
+Engine = create_engine('''sqlite:///app/database.db''')
 
 Base = declarative_base()
 

@@ -3,5 +3,6 @@ global:
 
 scrape_configs:
   - job_name: 'Log_parser_app'
+    metrics_path: '/matrix/metrics'
     static_configs:
       - targets: ['parser_container:5000']
