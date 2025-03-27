@@ -9,10 +9,10 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - /home/aayush/Docker_data/database.db:/app/database.db
-      - /home/aayush/Docker_data/logs:/app/logs
-      - /home/aayush/Docker_data/json_logs:/app/json_logs/
-      - /home/aayush/Docker_data/prometheus_data:/app/prometheus_data
+      - /home/app/Docker_data/database.db:/app/database.db
+      - /home/app/Docker_data/logs:/app/logs
+      - /home/app/Docker_data/json_logs:/app/json_logs/
+      - /home/app/Docker_data/prometheus_data:/app/prometheus_data
     environment:
       - SQLALCHEMY_DATABASE_URI=sqlite:///app/database.db
       - PROMETHEUS_MULTIPROC_DIR=/app/prometheus_data
@@ -26,7 +26,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - /home/aayush/Docker_data/prometheus_data:/prometheus
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - /home/app/Docker_data/prometheus_data:/prometheus
+      - /home/app/Minor/minor_project/parser/prometheus.yml:/etc/prometheus/prometheus.yml
     depends_on:
       - parser
