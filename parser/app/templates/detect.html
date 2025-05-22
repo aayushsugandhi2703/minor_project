@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DoS Detection Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md p-6">
+    <h1 class="text-2xl font-bold mb-4">DoS Attack Detection</h1>
+
+    <!-- Upload Form -->
+    <form action="{{ url_for('service.upload_file') }}" method="post" enctype="multipart/form-data" class="mb-6">
+      <input type="file" name="file" required class="mb-2 border p-2"/>
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+        Upload Log File
+      </button>
+    </form>
+
+    <!-- Detection Button -->
+    <button id="detectBtn" class="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+      Detect Suspicious IPs
+    </button>
+
+    <!-- Result Section -->
+    <div id="result" class="hidden">
+      <h2 class="text-xl font-semibold mb-2">Suspected IPs</h2>
+      <ul id="ipList" class="list-disc pl-6 mb-6"></ul>
+
+      <h2 class="text-xl font-semibold mb-2">IP Features</h2>
+      <div class="overflow-auto">
+        <table class="min-w-full text-sm text-left">
+          <thead class="bg-gray-200">
+            <tr id="featureHeader"></tr>
+          </thead>
+          <tbody id="featureTable" class="bg-white divide-y divide-gray-200"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="errorMsg" class="text-red-600 font-medium hidden mt-4"></div>
+  </div>
+
+  <script>
+    document.getElementById("detectBtn").addEventListener("click", async () => {
+      const resultDiv = document.getElementById("result");
+      const ipList = document.getElementById("ipList");
+      const featureTable = document.getElementById("featureTable");
+      const featureHeader = document.getElementById("featureHeader");
+      const errorMsg = document.getElementById("errorMsg");
+
+      resultDiv.classList.add("hidden");
+      errorMsg.classList.add("hidden");
+      ipList.innerHTML = '';
+      featureTable.innerHTML = '';
+      featureHeader.innerHTML = '';
+
+      try {
+        const response = await fetch("/detect_dos");
+        const data = await response.json();
+
+        if (response.ok) {
+          // Suspected IPs
+          data.suspected_ips.forEach(ip => {
+            const li = document.createElement("li");
+            li.textContent = ip;
+            ipList.appendChild(li);
+          });
+
+          // IP Features Table
+          const features = data.ip_features;
+          const headers = Object.keys(features[0] || {});
+          headers.forEach(header => {
+            const th = document.createElement("th");
+            th.className = "px-4 py-2 text-gray-600 font-medium";
+            th.textContent = header;
+            featureHeader.appendChild(th);
+          });
+
+          features.forEach(row => {
+            const tr = document.createElement("tr");
+            headers.forEach(key => {
+              const td = document.createElement("td");
+              td.className = "px-4 py-2";
+              td.textContent = row[key];
+              tr.appendChild(td);
+            });
+            featureTable.appendChild(tr);
+          });
+
+          resultDiv.classList.remove("hidden");
+        } else {
+          errorMsg.textContent = data.error || "Failed to fetch results.";
+          errorMsg.classList.remove("hidden");
+        }
+      } catch (error) {
+        errorMsg.textContent = "Error contacting server.";
+        errorMsg.classList.remove("hidden");
+      }
+    });
+  </script>
+</body>
+</html>

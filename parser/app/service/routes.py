@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for,current_app, session
+from flask import Blueprint, render_template, redirect, url_for,current_app, session, jsonify, request
 from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -8,10 +8,13 @@ import re , json, os, ipaddress
 from email.message import EmailMessage
 import smtplib, ssl, threading
 from prometheus_client import Histogram
+from app.service.log_classifier import LogClassifier
 
 service_bp = Blueprint('service', __name__)
 
 limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"])
+
+classifier = LogClassifier()
 
 # Histogram to track the latency of the login request
 Request_latency_upload = Histogram('upload_latency', 'Histogram tracking upload latency', buckets=[0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10])
@@ -22,7 +25,7 @@ Request_latency_output = Histogram('output_latency', 'Histogram tracking output 
 @login_required
 @limiter.limit("5 per minute")
 def Upload_Parse():
-    with Request_latency_upload.time():
+    with Request_latency_upload.time(): 
 
         form = upload_form()
         
@@ -40,6 +43,7 @@ def Upload_Parse():
                 f.write(file.read())
 
             session["uploaded_file"] = file_path  # Save file path in session
+            classifier.train_model(file_path)  # After parsing the uploaded file
 
             # Get the selected fields from the form
             selected_fields = form.fields.data  # List of selected field names
@@ -198,3 +202,48 @@ def send_email(app, receiver_email, json_file_path):
 
         except Exception as e:
             current_app.logger.error(f"Failed to send log file: {str(e)}")
+
+UPLOAD_FOLDER = "uploads"  # make sure this exists
+
+@service_bp.route('/dos_ui')
+@login_required
+def dos_ui():
+    return render_template("detect.html")
+
+@service_bp.route('/uploading', methods=['GET', 'POST'])
+@login_required
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    filename = secure_filename(file.filename)
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    file.save(file_path)
+
+    session['uploaded_file'] = file_path
+    return redirect(url_for("service.detect_dos"))
+
+@service_bp.route('/detect_dos', methods=['GET', 'POST'])
+@login_required
+def detect_dos():
+    file_path = session.get("uploaded_file")
+
+    if not file_path or not os.path.exists(file_path):
+        return jsonify({"error": "No uploaded file found"}), 400
+
+    classifier = LogClassifier(request_threshold=100, interval_threshold=2, error_threshold=20)
+    classifier.train_model(file_path)
+    suspected_ips = classifier.predict_suspected_ips()
+    features = classifier.get_ip_features()
+
+    current_app.logger.info(f"Suspected DoS IPs: {suspected_ips}")
+
+    return jsonify({
+        "suspected_ips": suspected_ips,
+        "ip_features": features
+    })
